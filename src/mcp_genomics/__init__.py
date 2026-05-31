@@ -1,0 +1,1 @@
+"""mcp-genomics: An MCP server for genomics intelligence"""
