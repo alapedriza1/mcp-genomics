@@ -22,6 +22,9 @@ from mcp_genomics.tools.search_genes import search_genes
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Module-level client reference, set during lifespan
+_ncbi_client: NCBIClient | None = None
+
 
 @asynccontextmanager
 async def lifespan(server: FastMCP):
@@ -29,8 +32,9 @@ async def lifespan(server: FastMCP):
     Manage server-wide resources across the application lifecycle.
 
     Opens the shared NCBIClient on startup and closes it on shutdown.
-    The client is stored in server.state for access by tool handlers.
     """
+    global _ncbi_client
+
     email = os.environ.get("NCBI_EMAIL")
     api_key = os.environ.get("NCBI_API_KEY")
 
@@ -40,7 +44,9 @@ async def lifespan(server: FastMCP):
         )
 
     async with NCBIClient(email=email, api_key=api_key) as client:
-        yield {"ncbi_client": client}
+        _ncbi_client = client
+        yield
+    _ncbi_client = None
 
 
 mcp = FastMCP(
@@ -74,8 +80,9 @@ async def search_genes_tool(
         A list of matching genes with ID, symbol, name, organism,
         chromosome, map location, and a summary snippet.
     """
-    client: NCBIClient = mcp.state["ncbi_client"]
-    return await search_genes(client, query, organism, max_results)
+    if _ncbi_client is None:
+        return {"error": "NCBI client not initialised", "results": []}
+    return await search_genes(_ncbi_client, query, organism, max_results)
 
 
 # ─── Entry Point ──────────────────────────────────────────────────────────────
