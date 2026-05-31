@@ -3,9 +3,14 @@ MCP server entry point for mcp-genomics.
 
 Registers all tools, resources, and prompts with the MCP SDK,
 manages the NCBIClient lifecycle, and runs via stdio transport.
+
+Configuration via environment variables:
+    NCBI_EMAIL   — Email address sent with API requests (courtesy, not enforced).
+    NCBI_API_KEY — Optional API key for 10 req/s rate limit (default is 3 req/s).
 """
 
 import logging
+import os
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -26,13 +31,21 @@ async def lifespan(server: FastMCP):
     Opens the shared NCBIClient on startup and closes it on shutdown.
     The client is stored in server.state for access by tool handlers.
     """
-    async with NCBIClient() as client:
+    email = os.environ.get("NCBI_EMAIL")
+    api_key = os.environ.get("NCBI_API_KEY")
+
+    if not email:
+        logger.warning(
+            "NCBI_EMAIL not set. NCBI recommends providing an email for API access."
+        )
+
+    async with NCBIClient(email=email, api_key=api_key) as client:
         yield {"ncbi_client": client}
 
 
 mcp = FastMCP(
     "mcp-genomics",
-    description="A genomics intelligence MCP server for biotech & pharma workflows",
+    instructions="A genomics intelligence MCP server for biotech & pharma workflows",
     lifespan=lifespan,
 )
 
