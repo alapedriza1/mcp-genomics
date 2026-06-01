@@ -22,6 +22,8 @@ from mcp_genomics.tools.search_genes import search_genes
 from mcp_genomics.tools.gene_details import get_gene_details
 from mcp_genomics.tools.compare_genes import compare_genes
 from mcp_genomics.tools.literature import get_literature
+from mcp_genomics.resources.gene_resource import read_gene_resource
+from mcp_genomics.resources.glossary_resource import read_glossary_term
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -163,6 +165,33 @@ async def get_literature_tool(
     if _ncbi_client is None or _cache is None:
         return {"error": "Server not initialised", "gene_id": gene_id}
     return await get_literature(_ncbi_client, _cache, gene_id, max_results)
+
+
+# ─── Resources ────────────────────────────────────────────────────────────────
+
+
+@mcp.resource("gene://ncbi/{gene_id}")
+async def gene_resource(gene_id: str) -> str:
+    """
+    Gene profile resource for context grounding.
+
+    Returns a human-readable text profile of a gene that Claude
+    can pull into its context window for reference.
+    """
+    if _ncbi_client is None or _cache is None:
+        return "Error: Server not initialised"
+    return await read_gene_resource(_ncbi_client, _cache, gene_id)
+
+
+@mcp.resource("glossary://genomics/{term}")
+async def glossary_resource(term: str) -> str:
+    """
+    Genomics glossary resource for terminology reference.
+
+    Returns a plain-English definition and enterprise context
+    for a genomics or drug-discovery term.
+    """
+    return read_glossary_term(term)
 
 
 # ─── Entry Point ──────────────────────────────────────────────────────────────
