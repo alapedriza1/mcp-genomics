@@ -10,6 +10,7 @@ Enterprise use case:
 """
 
 import logging
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from typing import Any
 
@@ -28,7 +29,8 @@ async def get_gene_details(
     Fetch a comprehensive profile for a single gene.
 
     Checks the SQLite cache first (7-day TTL). On cache miss,
-    calls esummary for the gene and caches the result.
+    calls esummary for core fields and efetch XML for diseases
+    and pathways, then caches the combined result.
 
     Args:
         client: An initialised NCBIClient instance.
@@ -60,7 +62,17 @@ async def get_gene_details(
         raw = summaries[0]
         result = _format_gene_details(raw)
 
-        # Step 3: Cache the result
+        # Step 3: Enrich with efetch XML (diseases, pathways)
+        try:
+            xml_text = await client.efetch_xml("gene", gene_id)
+            diseases, pathways = _parse_gene_xml(xml_text)
+            result["diseases"] = diseases
+            result["pathways"] = pathways
+        except (NCBIClientError, ET.ParseError) as e:
+            logger.warning("XML enrichment failed for gene %s: %s", gene_id, str(e))
+            # Non-fatal — we still have the esummary data
+
+        # Step 4: Cache the result
         cache.set_gene(gene_id, result)
 
         result["cached"] = False
@@ -102,9 +114,6 @@ def _format_gene_details(raw: dict[str, Any]) -> dict[str, Any]:
     aliases_str = raw.get("otheraliases", "")
     aliases = [a.strip() for a in aliases_str.split(",") if a.strip()] if aliases_str else []
 
-    # Extract other designations for additional context
-    other_designations = raw.get("otherdesignations", "")
-
     return {
         "gene_id": raw.get("uid", ""),
         "symbol": raw.get("name", ""),
@@ -115,7 +124,88 @@ def _format_gene_details(raw: dict[str, Any]) -> dict[str, Any]:
         "gene_type": raw.get("geneticSource", ""),
         "summary": raw.get("summary", ""),
         "aliases": aliases,
-        "diseases": [],  # Available via efetch XML — enrichment phase
-        "pathways": [],  # Available via efetch XML — enrichment phase
+        "diseases": [],
+        "pathways": [],
         "retrieved_at": datetime.now(timezone.utc).isoformat(),
     }
+
+
+def _parse_gene_xml(xml_text: str) -> tuple[list[str], list[str]]:
+    """
+    Parse diseases and pathways from an NCBI efetch gene XML response.
+
+    Diseases are found in Gene-commentary elements with heading "Diseases"
+    under Entrezgene_comments. Pathways are found under headings containing
+    "Pathways" or within KEGG/Reactome pathway annotations.
+
+    Args:
+        xml_text: Raw XML string from efetch.
+
+    Returns:
+        Tuple of (diseases list, pathways list).
+    """
+    diseases: list[str] = []
+    pathways: list[str] = []
+
+    try:
+        root = ET.fromstring(xml_text)
+    except ET.ParseError:
+        logger.warning("Failed to parse gene XML")
+        return diseases, pathways
+
+    # The XML structure has nested Gene-commentary elements.
+    # We search for all Gene-commentary elements and inspect their headings.
+    for commentary in root.iter("Gene-commentary"):
+        heading_elem = commentary.find("Gene-commentary_heading")
+        if heading_elem is None or heading_elem.text is None:
+            continue
+
+        heading = heading_elem.text.strip()
+
+        # Extract diseases
+        if heading.lower() == "diseases":
+            diseases = _extract_commentary_labels(commentary)
+
+        # Extract pathways (various headings)
+        if "pathway" in heading.lower():
+            pathways.extend(_extract_commentary_labels(commentary))
+
+    # Deduplicate while preserving order
+    pathways = list(dict.fromkeys(pathways))
+
+    return diseases, pathways
+
+
+def _extract_commentary_labels(commentary: ET.Element) -> list[str]:
+    """
+    Extract text labels from nested Gene-commentary elements.
+
+    Looks for Gene-commentary_text or Gene-commentary_heading in
+    child commentaries under the given parent commentary.
+
+    Args:
+        commentary: A Gene-commentary XML element.
+
+    Returns:
+        List of label strings found.
+    """
+    labels: list[str] = []
+
+    # Look in sub-commentaries
+    for sub in commentary.iter("Gene-commentary"):
+        # Skip the parent itself
+        if sub is commentary:
+            continue
+
+        # Try text first (more descriptive)
+        text_elem = sub.find("Gene-commentary_text")
+        if text_elem is not None and text_elem.text:
+            labels.append(text_elem.text.strip())
+            continue
+
+        # Fall back to heading
+        heading_elem = sub.find("Gene-commentary_heading")
+        if heading_elem is not None and heading_elem.text:
+            labels.append(heading_elem.text.strip())
+
+    return labels
