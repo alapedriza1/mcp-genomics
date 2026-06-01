@@ -68,7 +68,7 @@ async def get_gene_details(
             diseases, pathways = _parse_gene_xml(xml_text)
             result["diseases"] = diseases
             result["pathways"] = pathways
-        except (NCBIClientError, ET.ParseError) as e:
+        except Exception as e:
             logger.warning("XML enrichment failed for gene %s: %s", gene_id, str(e))
             # Non-fatal — we still have the esummary data
 
@@ -121,7 +121,7 @@ def _format_gene_details(raw: dict[str, Any]) -> dict[str, Any]:
         "organism": organism_name,
         "chromosome": raw.get("chromosome", ""),
         "map_location": raw.get("maplocation", ""),
-        "gene_type": raw.get("geneticSource", ""),
+        "gene_type": raw.get("geneticsource", ""),
         "summary": raw.get("summary", ""),
         "aliases": aliases,
         "diseases": [],
