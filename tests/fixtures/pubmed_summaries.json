@@ -1,0 +1,85 @@
+{
+  "result": {
+    "uids": ["18500671", "18647968", "18594935"],
+    "18500671": {
+      "uid": "18500671",
+      "pubdate": "2009 May",
+      "epubdate": "2008 May 26",
+      "source": "Breast Cancer Res Treat",
+      "authors": [
+        {"name": "Hansen TV", "authtype": "Author", "clusterid": ""},
+        {"name": "Ejlertsen B", "authtype": "Author", "clusterid": ""},
+        {"name": "Albrechtsen A", "authtype": "Author", "clusterid": ""},
+        {"name": "Bergsten E", "authtype": "Author", "clusterid": ""},
+        {"name": "Bjerregaard P", "authtype": "Author", "clusterid": ""},
+        {"name": "Hansen T", "authtype": "Author", "clusterid": ""},
+        {"name": "Myrhøj T", "authtype": "Author", "clusterid": ""},
+        {"name": "Nielsen PB", "authtype": "Author", "clusterid": ""},
+        {"name": "Timmermans-Wielenga V", "authtype": "Author", "clusterid": ""},
+        {"name": "Andersen MK", "authtype": "Author", "clusterid": ""},
+        {"name": "Jønson L", "authtype": "Author", "clusterid": ""},
+        {"name": "Nielsen FC", "authtype": "Author", "clusterid": ""}
+      ],
+      "lastauthor": "Nielsen FC",
+      "title": "A common Greenlandic Inuit BRCA1 RING domain founder mutation.",
+      "volume": "115",
+      "issue": "1",
+      "pages": "69-76",
+      "lang": ["eng"],
+      "pubtype": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+      "articleids": [
+        {"idtype": "pubmed", "idtypen": 1, "value": "18500671"},
+        {"idtype": "doi", "idtypen": 3, "value": "10.1007/s10549-008-0060-z"}
+      ]
+    },
+    "18647968": {
+      "uid": "18647968",
+      "pubdate": "2008 Dec",
+      "epubdate": "2008 Jul 22",
+      "source": "Oncogene",
+      "authors": [
+        {"name": "Chen Y", "authtype": "Author", "clusterid": ""},
+        {"name": "Chen CF", "authtype": "Author", "clusterid": ""},
+        {"name": "Riley DJ", "authtype": "Author", "clusterid": ""},
+        {"name": "Allred DC", "authtype": "Author", "clusterid": ""},
+        {"name": "Chen PL", "authtype": "Author", "clusterid": ""},
+        {"name": "Von Hoff D", "authtype": "Author", "clusterid": ""},
+        {"name": "Osborne CK", "authtype": "Author", "clusterid": ""},
+        {"name": "Lee WH", "authtype": "Author", "clusterid": ""}
+      ],
+      "lastauthor": "Lee WH",
+      "title": "Aberrant subcellular localization of BRCA1 in breast cancer.",
+      "volume": "27",
+      "issue": "56",
+      "pages": "5081-5091",
+      "lang": ["eng"],
+      "pubtype": ["Journal Article", "Research Support, N.I.H., Extramural"],
+      "articleids": [
+        {"idtype": "pubmed", "idtypen": 1, "value": "18647968"},
+        {"idtype": "doi", "idtypen": 3, "value": "10.1038/onc.2008.145"}
+      ]
+    },
+    "18594935": {
+      "uid": "18594935",
+      "pubdate": "2008 Jul 2",
+      "epubdate": "",
+      "source": "J Natl Cancer Inst",
+      "authors": [
+        {"name": "Bentley DR", "authtype": "Author", "clusterid": ""},
+        {"name": "Balasubramanian S", "authtype": "Author", "clusterid": ""},
+        {"name": "Swerdlow HP", "authtype": "Author", "clusterid": ""}
+      ],
+      "lastauthor": "Swerdlow HP",
+      "title": "BRCA1 promoter methylation in peripheral blood DNA of mutation negative familial breast cancer patients.",
+      "volume": "100",
+      "issue": "13",
+      "pages": "941-949",
+      "lang": ["eng"],
+      "pubtype": ["Journal Article"],
+      "articleids": [
+        {"idtype": "pubmed", "idtypen": 1, "value": "18594935"},
+        {"idtype": "doi", "idtypen": 3, "value": "10.1093/jnci/djn189"}
+      ]
+    }
+  }
+}

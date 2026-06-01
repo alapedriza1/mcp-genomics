@@ -1,0 +1,15 @@
+{
+  "linksets": [
+    {
+      "dbfrom": "gene",
+      "ids": [{"value": "672"}],
+      "linksetdbs": [
+        {
+          "dbto": "pubmed",
+          "linkname": "gene_pubmed",
+          "links": ["18500671", "18647968", "18594935", "27484786", "18558292"]
+        }
+      ]
+    }
+  ]
+}
