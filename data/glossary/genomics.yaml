@@ -1,0 +1,94 @@
+gene_expression:
+  term: "Gene Expression"
+  definition: "The process by which information from a gene is used to synthesise a functional gene product, typically a protein."
+  enterprise_context: "When assessing a therapeutic target, expression levels indicate where in the body the gene is active — relevant for drug delivery and side-effect prediction."
+
+ortholog:
+  term: "Ortholog"
+  definition: "Genes in different species that evolved from a common ancestral gene."
+  enterprise_context: "Relevant for preclinical research — if a drug target has a mouse ortholog, it can be studied in animal models."
+
+pathway:
+  term: "Biological Pathway"
+  definition: "A series of molecular interactions and reactions that lead to a specific biological outcome."
+  enterprise_context: "Understanding which pathways a target gene belongs to helps identify potential combination therapies and predict off-target effects."
+
+chromosome:
+  term: "Chromosome"
+  definition: "A long DNA molecule containing part or all of the genetic material of an organism. Humans have 23 pairs (46 total)."
+  enterprise_context: "Chromosome location matters for genetic testing strategies and understanding inheritance patterns of disease-associated genes."
+
+map_location:
+  term: "Cytogenetic Map Location"
+  definition: "The position of a gene on a chromosome, expressed as the chromosome number followed by the arm (p=short, q=long) and band (e.g., 17q21.31)."
+  enterprise_context: "Map location helps identify whether candidate targets are in chromosomal regions associated with specific diseases or copy-number variations."
+
+gene_type:
+  term: "Gene Type"
+  definition: "Classification of a gene by its functional product — most commonly protein-coding, but also ncRNA, pseudo, or other categories."
+  enterprise_context: "Gene type determines the druggability approach: protein-coding genes can be targeted by small molecules or antibodies, while ncRNA genes may require antisense oligonucleotides."
+
+ncRNA:
+  term: "Non-coding RNA (ncRNA)"
+  definition: "An RNA molecule that is not translated into a protein but has a functional role in the cell (e.g., microRNA, lncRNA)."
+  enterprise_context: "Emerging drug target class — ncRNAs regulate gene expression and can be targeted by RNA therapeutics, opening new modalities beyond traditional protein targets."
+
+mRNA:
+  term: "Messenger RNA (mRNA)"
+  definition: "An RNA molecule that carries the genetic code from DNA to the ribosome, where it serves as a template for protein synthesis."
+  enterprise_context: "mRNA is the basis for a new class of therapeutics (e.g., COVID-19 vaccines) and can be used to deliver instructions for producing therapeutic proteins — enabling rapid drug development with lower manufacturing complexity."
+
+tumour_suppressor:
+  term: "Tumour Suppressor Gene"
+  definition: "A gene that normally acts to restrain cell growth. When inactivated by mutation, it can contribute to cancer development."
+  enterprise_context: "Tumour suppressors (e.g., TP53, BRCA1) are often loss-of-function targets — harder to drug directly, but their downstream pathways offer therapeutic opportunities."
+
+oncogene:
+  term: "Oncogene"
+  definition: "A gene that, when mutated or overexpressed, has the potential to cause cancer by promoting uncontrolled cell growth."
+  enterprise_context: "Oncogenes (e.g., KRAS, EGFR) are prime drug targets because inhibiting their overactive protein product can halt tumour growth — the basis of many targeted therapies."
+
+kinase:
+  term: "Kinase"
+  definition: "An enzyme that transfers phosphate groups to other proteins, acting as a molecular switch to activate or deactivate cellular processes."
+  enterprise_context: "Kinases are one of the most druggable protein families — over 70 kinase inhibitors are approved as cancer therapeutics (e.g., imatinib, erlotinib)."
+
+receptor:
+  term: "Receptor"
+  definition: "A protein on the cell surface or inside the cell that binds specific molecules (ligands) and triggers a cellular response."
+  enterprise_context: "Receptors are major drug targets — they can be blocked by antagonists, activated by agonists, or targeted by antibodies (e.g., HER2 in breast cancer)."
+
+phenotype:
+  term: "Phenotype"
+  definition: "The observable physical or biochemical characteristics of an organism, determined by both genetic makeup and environmental influences."
+  enterprise_context: "Phenotype data connects genes to clinical outcomes — essential for understanding which patient populations will benefit from a targeted therapy."
+
+genotype:
+  term: "Genotype"
+  definition: "The genetic makeup of an individual, specifically the alleles present at one or more loci."
+  enterprise_context: "Genotype information drives precision medicine — matching patients to therapies based on their specific genetic variants (e.g., BRCA status for PARP inhibitors)."
+
+variant:
+  term: "Genetic Variant"
+  definition: "A difference in DNA sequence compared to a reference genome. Variants range from single nucleotide changes (SNPs) to large structural alterations."
+  enterprise_context: "Variants determine whether a gene is a viable drug target for a specific patient — some variants confer drug resistance, others create actionable therapeutic opportunities."
+
+monogenic:
+  term: "Monogenic Disease"
+  definition: "A disease caused by a mutation in a single gene (e.g., cystic fibrosis, sickle cell disease)."
+  enterprise_context: "Monogenic diseases are ideal for gene therapy and precision medicine approaches because the causal gene is clearly identified."
+
+polygenic:
+  term: "Polygenic Trait/Disease"
+  definition: "A trait or disease influenced by many genes, each contributing a small effect (e.g., height, type 2 diabetes)."
+  enterprise_context: "Polygenic diseases are harder to target with single-gene therapies — they typically require combination approaches or pathway-level interventions."
+
+biomarker:
+  term: "Biomarker"
+  definition: "A measurable indicator of a biological state or condition, often used to assess disease presence, progression, or treatment response."
+  enterprise_context: "Biomarkers are critical for clinical trial design — they define patient selection criteria, measure drug efficacy, and support regulatory approval (companion diagnostics)."
+
+druggable_target:
+  term: "Druggable Target"
+  definition: "A protein or molecular entity whose activity can be modulated by a drug-like molecule with therapeutic benefit."
+  enterprise_context: "Druggability assessment is a key early-stage filter — only ~10-15% of human proteins are considered traditionally druggable, though new modalities (RNA therapeutics, PROTACs) are expanding this."
