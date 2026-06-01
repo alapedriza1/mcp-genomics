@@ -20,6 +20,7 @@ from mcp_genomics.api import NCBIClient
 from mcp_genomics.data import CacheDB
 from mcp_genomics.tools.search_genes import search_genes
 from mcp_genomics.tools.gene_details import get_gene_details
+from mcp_genomics.tools.compare_genes import compare_genes
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -114,6 +115,29 @@ async def get_gene_details_tool(
     if _ncbi_client is None or _cache is None:
         return {"error": "Server not initialised", "gene_id": gene_id}
     return await get_gene_details(_ncbi_client, _cache, gene_id)
+
+
+@mcp.tool()
+async def compare_genes_tool(
+    gene_ids: list[str],
+) -> dict[str, Any]:
+    """
+    Compare 2-5 genes side by side.
+
+    Produces a structured comparison table and overlap analysis including
+    shared diseases, shared pathways, and chromosome co-location.
+    Use after search_genes to compare candidate therapeutic targets.
+
+    Args:
+        gene_ids: List of 2-5 NCBI Gene IDs to compare
+                  (e.g., ["672", "7157", "1956"] for BRCA1, TP53, EGFR).
+
+    Returns:
+        A comparison table, overlap analysis, and full details for each gene.
+    """
+    if _ncbi_client is None or _cache is None:
+        return {"error": "Server not initialised", "gene_ids": gene_ids}
+    return await compare_genes(_ncbi_client, _cache, gene_ids)
 
 
 # ─── Entry Point ──────────────────────────────────────────────────────────────
