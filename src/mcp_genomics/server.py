@@ -21,6 +21,7 @@ from mcp_genomics.data import CacheDB
 from mcp_genomics.tools.search_genes import search_genes
 from mcp_genomics.tools.gene_details import get_gene_details
 from mcp_genomics.tools.compare_genes import compare_genes
+from mcp_genomics.tools.literature import get_literature
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -138,6 +139,30 @@ async def compare_genes_tool(
     if _ncbi_client is None or _cache is None:
         return {"error": "Server not initialised", "gene_ids": gene_ids}
     return await compare_genes(_ncbi_client, _cache, gene_ids)
+
+
+@mcp.tool()
+async def get_literature_tool(
+    gene_id: str,
+    max_results: int = 5,
+) -> dict[str, Any]:
+    """
+    Retrieve recent PubMed publications linked to a gene.
+
+    Returns citable articles with titles, authors, journal, and PubMed URLs.
+    Use this to ground analysis in real published evidence.
+
+    Args:
+        gene_id: NCBI Gene ID (e.g., "672" for BRCA1). Obtain this from search_genes.
+        max_results: Maximum number of publications to return. Defaults to 5.
+
+    Returns:
+        A list of PubMed articles with title, authors, journal, date,
+        and direct PubMed URL for each publication.
+    """
+    if _ncbi_client is None or _cache is None:
+        return {"error": "Server not initialised", "gene_id": gene_id}
+    return await get_literature(_ncbi_client, _cache, gene_id, max_results)
 
 
 # ─── Entry Point ──────────────────────────────────────────────────────────────
