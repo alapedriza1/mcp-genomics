@@ -94,27 +94,30 @@ class NCBIClient:
 
     def _base_params(self) -> dict[str, str]:
         """Common parameters for all Entrez requests."""
-        params: dict[str, str] = {"retmode": "json", "tool": self._tool_name}
+        params: dict[str, str] = {"tool": self._tool_name}
         if self._email:
             params["email"] = self._email
         if self._api_key:
             params["api_key"] = self._api_key
         return params
 
-    async def _request(
+    async def _request_raw(
         self,
         endpoint: str,
         params: dict[str, Any],
-    ) -> dict:
+    ) -> httpx.Response:
         """
         Make a rate-limited, retrying GET request to an Entrez endpoint.
+
+        Returns the raw httpx.Response for the caller to parse
+        (as JSON, XML, or text depending on the endpoint).
 
         Args:
             endpoint: E-utility endpoint path (e.g., "esearch.fcgi")
             params: Query parameters (merged with base params)
 
         Returns:
-            Parsed JSON response dict
+            Raw httpx.Response object
 
         Raises:
             NCBIClientError: After all retries are exhausted
@@ -152,7 +155,7 @@ class NCBIClient:
                     continue
 
                 response.raise_for_status()
-                return response.json()
+                return response
 
             except httpx.TimeoutException as e:
                 last_error = e
@@ -179,6 +182,44 @@ class NCBIClient:
             f"Request to {endpoint} failed after {MAX_RETRIES} retries: {last_error}"
         )
 
+    async def _request_json(
+        self,
+        endpoint: str,
+        params: dict[str, Any],
+    ) -> dict:
+        """
+        Make a request and parse the response as JSON.
+
+        Args:
+            endpoint: E-utility endpoint path
+            params: Query parameters (retmode=json added automatically)
+
+        Returns:
+            Parsed JSON response dict
+        """
+        params = {**params, "retmode": "json"}
+        response = await self._request_raw(endpoint, params)
+        return response.json()
+
+    async def _request_xml(
+        self,
+        endpoint: str,
+        params: dict[str, Any],
+    ) -> str:
+        """
+        Make a request and return the response as raw XML text.
+
+        Args:
+            endpoint: E-utility endpoint path
+            params: Query parameters (retmode=xml added automatically)
+
+        Returns:
+            Raw XML response string
+        """
+        params = {**params, "retmode": "xml"}
+        response = await self._request_raw(endpoint, params)
+        return response.text
+
     # ─── E-utility Wrappers ───────────────────────────────────────────────
 
     async def esearch(
@@ -199,7 +240,7 @@ class NCBIClient:
             Dict with 'idlist', 'count', 'retmax', 'querytranslation'
         """
         params = {"db": db, "term": term, "retmax": str(retmax)}
-        response = await self._request("esearch.fcgi", params)
+        response = await self._request_json("esearch.fcgi", params)
         return response.get("esearchresult", {})
 
     async def esummary(
@@ -221,7 +262,7 @@ class NCBIClient:
             return []
 
         params = {"db": db, "id": ",".join(ids)}
-        response = await self._request("esummary.fcgi", params)
+        response = await self._request_json("esummary.fcgi", params)
 
         result = response.get("result", {})
         uid_list = result.get("uids", [])
@@ -235,12 +276,12 @@ class NCBIClient:
         retmode: str = "json",
     ) -> dict:
         """
-        Fetch full records from an NCBI database.
+        Fetch full records from an NCBI database (JSON mode).
 
         Args:
             db: Database name
             ids: List of database UIDs
-            rettype: Return type (e.g., "docsum", "gene_table", "xml")
+            rettype: Return type (e.g., "docsum", "gene_table")
             retmode: Return mode ("json", "xml", "text")
 
         Returns:
@@ -255,7 +296,29 @@ class NCBIClient:
             "rettype": rettype,
             "retmode": retmode,
         }
-        return await self._request("efetch.fcgi", params)
+        response = await self._request_raw("efetch.fcgi", params)
+        return response.json()
+
+    async def efetch_xml(
+        self,
+        db: str,
+        gene_id: str,
+    ) -> str:
+        """
+        Fetch the full XML record for a gene.
+
+        The gene database's efetch endpoint only returns XML (no JSON option).
+        Use xml.etree.ElementTree to parse the returned string.
+
+        Args:
+            db: Database name (typically "gene")
+            gene_id: Single gene UID to fetch
+
+        Returns:
+            Raw XML string of the full gene record
+        """
+        params = {"db": db, "id": gene_id}
+        return await self._request_xml("efetch.fcgi", params)
 
     async def elink(
         self,
@@ -288,7 +351,7 @@ class NCBIClient:
         if linkname:
             params["linkname"] = linkname
 
-        response = await self._request("elink.fcgi", params)
+        response = await self._request_json("elink.fcgi", params)
 
         # Parse linked IDs from the response structure
         linked_ids: list[str] = []
