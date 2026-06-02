@@ -3,7 +3,7 @@ name = "mcp-genomics"
 version = "0.1.0"
 description = "An MCP server for genomics intelligence, build for biotech & pharma enterprise workflows"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 dependencies = [
     "httpx>=0.28.1",
     "mcp[cli]>=1.27.1",
